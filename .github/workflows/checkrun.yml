@@ -1,0 +1,148 @@
+name: Test S3 Listener
+
+on:
+  workflow_dispatch:  # Manual trigger for testing
+  pull_request:
+    branches:
+      - test-listener  # Only trigger on test branch
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    name: "Setup Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup phase
+        run: |
+          echo "Setting up test environment..."
+          sleep 2
+          echo "Setup complete"
+
+  warm_up:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        machine:
+          - rb3gen2-core-kit
+          - qcom-armv8a
+        distro:
+          - name: poky-altcfg
+          - name: qcom-distro
+    name: warmup-${{ matrix.machine }}/${{ matrix.distro.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Simulate build preparation
+        run: |
+          echo "Preparing build for ${{ matrix.machine }}/${{ matrix.distro.name }}"
+          sleep 2
+          echo "Preparation complete"
+      
+      - name: Simulate compilation
+        run: |
+          echo "Compiling for ${{ matrix.machine }}/${{ matrix.distro.name }}"
+          sleep 2
+          echo "Compilation complete"
+
+  compile:
+    needs: warm_up
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        machine:
+          - iq-615-evk
+          - iq-8275-evk
+          - iq-9075-evk
+          - rb1-core-kit
+          - sm8750-mtp
+        distro:
+          - name: poky-altcfg
+          - name: qcom-distro
+          - name: qcom-distro-selinux
+        include:
+          - machine: qcom-armv8a
+            distro:
+              name: qcom-distro-sota
+          - machine: iq-9075-evk
+            distro:
+              name: performance
+    name: ${{ matrix.machine }}/${{ matrix.distro.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Simulate build process
+        run: |
+          echo "Building ${{ matrix.machine }}/${{ matrix.distro.name }}"
+          sleep 2
+          echo "Build complete"
+      
+      - name: Simulate artifact staging
+        run: |
+          echo "Staging artifacts for ${{ matrix.machine }}/${{ matrix.distro.name }}"
+          mkdir -p ./uploads/${{ matrix.distro.name }}/${{ matrix.machine }}
+          echo "Build artifacts for ${{ matrix.machine }}/${{ matrix.distro.name }}" > ./uploads/${{ matrix.distro.name }}/${{ matrix.machine }}/artifact.txt
+          echo "Artifacts staged"
+          sleep 2
+      
+      - name: Simulate S3 upload
+        id: s3_upload
+        run: |
+          echo "Uploading to S3: ${{ matrix.machine }}/${{ matrix.distro.name }}"
+          sleep 2
+          echo "S3 upload complete"
+          echo "url=https://s3.example.com/builds/${{ github.run_id }}/${{ matrix.distro.name }}/${{ matrix.machine }}" >> $GITHUB_OUTPUT
+      
+      - name: Save build URL
+        run: |
+          BUILDNAME="${{ matrix.machine }}_${{ matrix.distro.name }}"
+          FILENAME="build-url_${BUILDNAME}"
+          echo "${{ steps.s3_upload.outputs.url }}" > "${FILENAME}"
+          echo "Build URL saved: ${FILENAME}"
+      
+      - name: Upload build URL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-url_${{ matrix.machine }}_${{ matrix.distro.name }}
+          path: build-url_${{ matrix.machine }}_${{ matrix.distro.name }}
+
+  summary:
+    needs: compile
+    runs-on: ubuntu-latest
+    name: "Generate Summary"
+    steps:
+      - name: Download all build URLs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: build-url*
+          path: urlfiles
+          merge-multiple: true
+      
+      - name: Generate summary
+        run: |
+          echo "## Test Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Machine | Distro | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|-----|" >> $GITHUB_STEP_SUMMARY
+          
+          for file in urlfiles/build-url_*; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              # Extract machine and distro from filename: build-url_MACHINE_DISTRO
+              machine_distro="${filename#build-url_}"
+              url=$(cat "$file")
+              echo "| ${machine_distro} | | [Link]($url) |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+          sleep 2
+          echo "Summary generation complete"
