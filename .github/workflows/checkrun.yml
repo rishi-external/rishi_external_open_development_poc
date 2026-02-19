@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Manual trigger for testing
   pull_request:
     branches:
-      - test-listener  # Only trigger on test branch
+      - main  # Only trigger on test branch
 
 permissions:
   contents: read
