@@ -3,7 +3,7 @@ name: Test S3 Listener
 on:
   
   schedule:
-    - cron: "*/20 * * * *"   # Runs every 20 minutes (UTC)
+    - cron: "*/3 * * * *"   # Runs every 20 minutes (UTC)
   workflow_dispatch:  # Manual trigger for testing
   pull_request:
     branches:
