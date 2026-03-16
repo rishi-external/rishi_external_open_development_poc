@@ -14,3 +14,15 @@ jobs:
           echo "Base branch: ${{ github.event.pull_request.base.ref }}"
           echo "Fork repo: ${{ github.event.pull_request.head.repo.full_name }}"
           echo "Is fork: ${{ github.event.pull_request.head.repo.fork }}"
+          
+  event-file:
+    name: "Upload event file"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v6
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
+
+    
