@@ -14,3 +14,7 @@ jobs:
 
       - name: Say Hello
         run: echo "Hello from GitHub Actions!"
+
+    steps:
+      - name: Get PR Details
+        run: echo "The Base Branch is: ${{ github.event.pull_request.base.ref }}"
