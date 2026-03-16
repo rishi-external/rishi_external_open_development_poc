@@ -1,0 +1,16 @@
+name: Build on PR
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "PR number: ${{ github.event.pull_request.number }}"
+          echo "Base branch: ${{ github.event.pull_request.base.ref }}"
+          echo "Fork repo: ${{ github.event.pull_request.head.repo.full_name }}"
+          echo "Is fork: ${{ github.event.pull_request.head.repo.fork }}"
