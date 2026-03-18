@@ -14,7 +14,17 @@ jobs:
           echo "Base branch: ${{ github.event.pull_request.base.ref }}"
           echo "Fork repo: ${{ github.event.pull_request.head.repo.full_name }}"
           echo "Is fork: ${{ github.event.pull_request.head.repo.fork }}"
-          
+
+      - name: Add job summary
+        run: |
+          echo "## PR Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| PR Number | ${{ github.event.pull_request.number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Base Branch | ${{ github.event.pull_request.base.ref }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fork Repo | ${{ github.event.pull_request.head.repo.full_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Is Fork | ${{ github.event.pull_request.head.repo.fork }} |" >> $GITHUB_STEP_SUMMARY
+
   event-file:
     name: "Upload event file"
     runs-on: ubuntu-latest
@@ -24,5 +34,3 @@ jobs:
       with:
         name: Event File
         path: ${{ github.event_path }}
-
-    
