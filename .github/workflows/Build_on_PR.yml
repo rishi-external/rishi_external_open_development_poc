@@ -6,7 +6,7 @@ on:
       - opened
 
 jobs:
-  say-hello:
+  cr-transition-details:
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -15,7 +15,7 @@ jobs:
           echo "Fork repo: ${{ github.event.pull_request.head.repo.full_name }}"
           echo "Is fork: ${{ github.event.pull_request.head.repo.fork }}"
 
-      - name: Add job summary
+      - name: log summary
         run: |
           echo "## PR Summary" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
@@ -25,12 +25,12 @@ jobs:
           echo "| Fork Repo | ${{ github.event.pull_request.head.repo.full_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Is Fork | ${{ github.event.pull_request.head.repo.fork }} |" >> $GITHUB_STEP_SUMMARY
 
-  event-file:
-    name: "Upload event file"
-    runs-on: ubuntu-latest
-    steps:
-    - name: Upload
-      uses: actions/upload-artifact@v6
-      with:
-        name: Event File
-        path: ${{ github.event_path }}
+  # event-file:
+  #   name: "Upload event file"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Upload
+  #     uses: actions/upload-artifact@v6
+  #     with:
+  #       name: Event File
+  #       path: ${{ github.event_path }}
