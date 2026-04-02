@@ -14,3 +14,11 @@ jobs:
 
       - name: Say Hello
         run: echo "Hello from GitHub Actions!"
+
+  cr-movement:
+    name: "CR Movement"
+    uses: qualcomm-linux-stg/qswat-qli-workflows/.github/workflows/meta-qcom-cr-movement.yml@main
+    with:
+      workflow_id: ${{ github.run_id }}
+      run_attempt: ${{ github.run_attempt }}
+      pr_number: ${{ github.event.pull_request.number }}
