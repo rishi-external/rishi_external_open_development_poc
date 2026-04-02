@@ -17,7 +17,7 @@ jobs:
 
   cr-movement:
     name: "CR Movement"
-    uses: rishi-external/qcom-reusable-workflows/.github/workflows/qswat/reusable-pr-to-workflow-dependency.yml@main
+    uses: rishi-external/qcom-reusable-workflows/.github/workflows/qswat-reusable-pr-to-workflow-dependency.yml@main
     with:
       workflow_id: ${{ github.run_id }}
       run_attempt: ${{ github.run_attempt }}
