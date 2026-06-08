@@ -1,0 +1,37 @@
+name: distro_nightly
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+  workflow_dispatch:       # Allows manual trigger
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    strategy:
+      matrix:
+        suite: [qusting, noble, triexe]
+
+    name: Build - ${{ matrix.suite }}
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generate provenance JSON
+        run: |
+          echo '{
+            "repo": "my-sample-repo",
+            "commit": "abc1234def5678",
+            "file": "${{ matrix.suite }}_provenance"
+          }' > ${{ matrix.suite }}_provenance.json
+
+      - name: Upload ${{ matrix.suite }} provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.suite }}_provenance
+          path: ${{ matrix.suite }}_provenance.json
