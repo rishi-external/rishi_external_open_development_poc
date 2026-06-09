@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        suite: [artifact]
+        suite: [questing, noble, triexe]
 
     name: Build - ${{ matrix.suite }}
 
